@@ -1,0 +1,306 @@
+import requests
+import subprocess
+import socket
+import json
+
+def menu():
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@                     MC5 em @                                 @")
+    print("@                                                             @")
+    print("@ Selecione qual script executar:                             @")
+    print("@                                                             @")
+    print("@ 1. Autenticação com API                                     @")
+    print("@ 2. Fazer uma solicitação GET para um endpoint da API        @")
+    print("@ 3. Verificar disponibilidade de endpoints da API            @")
+    print("@ 4. Obter chave API                                           @")
+    print("@ 5. Criar um novo usuário na API                             @")
+    print("@ 6. Verificar vulnerabilidades de CVEs                       @")
+    print("@ 7. Verificar portas abertas                                 @")
+    print("@ 8. Encontrar subdomínios associados à API                   @")
+    print("@ 9. Exibir usuários da API                                   @")
+    print("@ 10. Obter informações da API                                @")
+    print("@ 11. Autenticação com API usando chave API                    @")
+    print("@ 12. Fazer uma solicitação GET para a API e salvar no log     @")
+    print("@                                                             @")
+    print("@ Digite 'q' para sair                                        @")
+    print("@                                                             @")
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print()
+
+def autenticacao_api(url):
+    # Define as informações de autenticação
+    username = 'seu_usuario'
+    password = 'sua_senha'
+
+    # Define o endpoint de autenticação
+    auth_endpoint = url + '/auth'
+
+    # Faz uma solicitação HTTP POST para autenticar e obter um token de acesso
+    response = requests.post(auth_endpoint, data={'username': username, 'password': password})
+    if response.status_code == 200:
+        # Obtém o token de acesso da resposta
+        access_token = response.json()['access_token']
+        print('Autenticação bem-sucedida. Token de acesso:', access_token)
+    else:
+        print('Falha na autenticação. Código de status HTTP:', response.status_code)
+
+def fazer_solicitacao_get(url):
+    # Endpoint de exemplo
+    endpoint = input("Digite o endpoint para fazer a solicitação GET: ")
+    url = url + '/api/' + endpoint
+
+    # Fazer a solicitação GET para o endpoint
+    response = requests.get(url)
+
+    # Verificar o código de status da resposta
+    if response.status_code == 200:
+        # A resposta foi bem-sucedida, então processamos os dados
+        data = response.json()
+        # Exibir os dados de forma estruturada
+        print(json.dumps(data, indent=4))
+    else:
+        # A resposta não foi bem-sucedida, então exibimos o código de status
+        print(f"Erro: {response.status_code}")
+
+def verificar_disponibilidade_endpoints(url):
+    # Lista de endpoints a serem verificados
+    endpoints = [
+        "endpoint1",
+        "endpoint2",
+        "endpoint3"
+    ]
+
+    # Loop através de cada endpoint
+    for endpoint in endpoints:
+        # Monta a URL completa para o endpoint atual
+        endpoint_url = url + '/api/' + endpoint
+
+        # Envia uma solicitação GET para a URL
+        response = requests.get(endpoint_url)
+
+        # Verifica se a solicitação foi bem-sucedida
+        if response.status_code == 200:
+            print("Endpoint", endpoint, "está disponível!")
+        else:
+            print("Endpoint", endpoint, "não está disponível. Erro:", response.status_code)
+
+def obter_chave_api(url):
+    # Parâmetros necessários para autenticar a sua solicitação
+    params = {
+        "username": "seu_nome_de_usuário",
+        "password": "sua_senha"
+    }
+
+    # Envia uma solicitação POST para o serviço de API para autenticar
+    response = requests.post(url, params)
+
+    # Verifica se a solicitação foi bem-sucedida
+    if response.status_code == 200:
+        # Extrai a chave API do corpo da resposta
+        api_key = response.json()["api_key"]
+        print("Sua chave API é:", api_key)
+    else:
+        print("Não foi possível obter a chave API. Erro:", response.status_code)
+
+def criar_novo_usuario(url):
+    # Dados do novo usuário a serem incluídos no payload
+    novo_usuario = {
+        'nome': 'John Doe',
+        'email': 'johndoe@exemplo.com',
+        'senha': 'minha_senha_segura'
+    }
+
+    # Cria um payload para a solicitação POST usando os dados do novo usuário
+    payload = {
+        'usuario': novo_usuario
+    }
+
+    # Faz uma solicitação HTTP POST para criar um novo usuário
+    response = requests.post(url, json=payload)
+
+    # Verifica se a solicitação foi bem-sucedida (status code 201 indica sucesso na criação do recurso)
+    if response.status_code == 201:
+        # Imprime a resposta da API, que pode incluir informações sobre o novo usuário criado
+        print(response.json())
+    else:
+        # Se houver um erro na solicitação, imprime o status code e a mensagem de erro
+        print(f'Erro na solicitação. Status code: {response.status_code}. Mensagem: {response.text}')
+
+def verificar_vulnerabilidades_cve(url):
+    # Lista de CVEs a serem verificados
+    cve_list = [
+        "CVE-2021-12345",
+        "CVE-2021-23456",
+        "CVE-2021-34567"
+    ]
+
+    # Loop através de cada CVE
+    for cve in cve_list:
+        # Monta a URL completa para o endpoint que pode estar vulnerável
+        endpoint_url = url + '/api/vulnerability/' + cve
+
+        # Envia uma solicitação GET para o endpoint
+        response = requests.get(endpoint_url)
+
+        # Verifica se a resposta inclui informações sobre a vulnerabilidade
+        if cve in response.text:
+            print("Aplicação de API está vulnerável a", cve)
+        else:
+            print("Aplicação de API não está vulnerável a", cve)
+
+def verificar_portas_abertas(ip_address):
+    # Lista de portas a serem verificadas
+    port_list = [80, 443, 8080, 8888]
+
+    # Loop através de cada porta
+    for port in port_list:
+        # Cria um objeto de soquete
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # Define o tempo limite para a conexão em 1 segundo
+        sock.settimeout(1)
+
+        # Tenta se conectar à porta atual
+        result = sock.connect_ex((ip_address, port))
+
+        # Verifica se a porta está aberta
+        if result == 0:
+            print("Porta", port, "está aberta!")
+        else:
+            print("Porta", port, "não está aberta.")
+
+        # Fecha o soquete
+        sock.close()
+
+def encontrar_subdominios_associados(url):
+    # Fazer a solicitação GET para a raiz da API
+    response = requests.get(url)
+
+    # Verificar o código de status da resposta
+    if response.status_code == 200:
+        # A resposta foi bem-sucedida, então obtemos o conteúdo da página
+        page_content = response.text
+        # Utilizar a ferramenta Sublist3r para encontrar subdomínios na página
+        subdomains = subprocess.check_output(["sublist3r", "-d", "exemplo.com", "-t", "10", "-o", "subdomains.txt"])
+        # Filtrar os subdomínios encontrados para aqueles que estão relacionados à API
+        api_subdomains = [subdomain for subdomain in subdomains.decode().split('\n') if subdomain in page_content]
+        print(f"Subdomínios associados à API: {api_subdomains}")
+    else:
+        # A resposta não foi bem-sucedida, então exibimos o código de status
+        print(f"Erro: {response.status_code}")
+
+def exibir_usuarios_api(url):
+    # Faz uma solicitação HTTP GET para o endpoint de usuários da API
+    response = requests.get(url)
+
+    # Verifica se a solicitação foi bem-sucedida (status code 200 indica sucesso)
+    if response.status_code == 200:
+        # A resposta da API é geralmente um objeto JSON, então decodifica para obter um dicionário Python
+        users = response.json()
+        # Imprime os usuários obtidos
+        print(users)
+    else:
+        # Se houver um erro na solicitação, imprime o status code e a mensagem de erro
+        print(f'Erro na solicitação. Status code: {response.status_code}. Mensagem: {response.text}')
+
+def obter_informacoes_api(url):
+    # Fazer a solicitação GET para a API
+    response = requests.get(url)
+
+    # Obter informações da resposta
+    api_name = response.headers.get('X-API-Name')
+    api_version = response.headers.get('X-API-Version')
+
+    # Imprimir informações da API
+    if api_name and api_version:
+        print(f"A API sendo utilizada é {api_name} na versão {api_version}.")
+    else:
+        print("Não foi possível determinar a API sendo utilizada.")
+
+def autenticacao_api_com_chave(url):
+    # Define as informações de autenticação
+    api_key = 'SUA_API_KEY_AQUI'
+    api_secret = 'SUA_API_SECRET_AQUI'
+
+    # Define o endpoint de autenticação
+    auth_endpoint = url + '/auth'
+
+    # Faz uma solicitação HTTP POST para autenticar e obter um token de acesso
+    response = requests.post(auth_endpoint, data={'api_key': api_key, 'api_secret': api_secret})
+    if response.status_code == 200:
+        # Obtém o token de acesso da resposta
+        access_token = response.json()['access_token']
+        print('Autenticado com sucesso. Token de acesso:', access_token)
+    else:
+        print('Falha na autenticação. Código de status HTTP:', response.status_code)
+
+def fazer_solicitacao_get_salvar_log(url):
+    # Configurar o logger
+    logging.basicConfig(filename='api_requests.log', level=logging.DEBUG)
+
+    # Criar conexão HTTP
+    conn = http.client.HTTPSConnection(url)
+
+    # Enviar a solicitação GET
+    conn.request('GET', '/api/endpoint')
+
+    # Obter a resposta da API
+    response = conn.getresponse()
+
+    # Ler os dados da resposta
+    data = response.read()
+
+    # Salvar a solicitação no arquivo de log
+    logging.info(f"Solicitação GET para {url} com status {response.status}: {data}")
+
+    # Fechar a conexão
+    conn.close()
+
+def selecionar_opcao(opcao, url):
+    if opcao == '1':
+        autenticacao_api(url)
+    elif opcao == '2':
+        fazer_solicitacao_get(url)
+    elif opcao == '3':
+        verificar_disponibilidade_endpoints(url)
+    elif opcao == '4':
+        obter_chave_api(url)
+    elif opcao == '5':
+        criar_novo_usuario(url)
+    elif opcao == '6':
+        verificar_vulnerabilidades_cve(url)
+    elif opcao == '7':
+        verificar_portas_abertas(url)
+    elif opcao == '8':
+        encontrar_subdominios_associados(url)
+    elif opcao == '9':
+        exibir_usuarios_api(url)
+    elif opcao == '10':
+        obter_informacoes_api(url)
+    elif opcao == '11':
+        autenticacao_api_com_chave(url)
+    elif opcao == '12':
+        fazer_solicitacao_get_salvar_log(url)
+    elif opcao.lower() == 'q':
+        return False
+    else:
+        print('Opção inválida. Tente novamente.')
+
+    return True
+
+def main():
+    executar = True
+
+    while executar:
+        menu()
+        opcao = input("Digite o número da opção desejada (ou 'q' para sair): ")
+
+        if opcao.lower() == 'q':
+            executar = False
+            break
+
+        url = input("Digite a URL da API: ")
+        executar = selecionar_opcao(opcao, url)
+
+if __name__ == "__main__":
+    main()
