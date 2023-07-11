@@ -5,7 +5,7 @@ import json
 
 def menu():
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@                     MC5 em @                                 @")
+    print("@                     MC5                                     @")
     print("@                                                             @")
     print("@ Selecione qual script executar:                             @")
     print("@                                                             @")
