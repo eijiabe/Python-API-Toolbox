@@ -1,7 +1,10 @@
-import requests
+mport requests
 import subprocess
 import socket
 import json
+import http.client 
+import logging
+
 
 def menu():
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
