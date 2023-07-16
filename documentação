@@ -1,0 +1,67 @@
+Python API Toolbox 2.0
+
+O Python API Toolbox 2.0 é uma biblioteca em Python que fornece ferramentas para interagir com APIs de forma simples e eficiente. Com essa biblioteca, você pode realizar autenticação, fazer solicitações GET e POST, verificar vulnerabilidades de CVEs e até mesmo realizar brute force de senhas.
+Instalação
+
+Para instalar o Python API Toolbox 2.0, você pode usar o gerenciador de pacotes pip. Basta executar o seguinte comando no terminal:
+
+pip install python-api-toolbox
+
+Como usar
+
+Aqui estão alguns exemplos básicos de como utilizar as funcionalidades do Python API Toolbox 2.0:
+Autenticação com API
+
+python
+
+from api_toolbox import authenticate
+
+url = 'https://api.exemplo.com/auth'
+username = 'seu_usuario'
+password = 'sua_senha'
+
+access_token = authenticate(url, username, password)
+print('Token de acesso:', access_token)
+
+Fazer solicitação GET
+
+python
+
+from api_toolbox import get_request
+
+url = 'https://api.exemplo.com/data'
+headers = {'Authorization': 'Bearer SEU_TOKEN_AQUI'}
+
+response = get_request(url, headers=headers)
+print('Resposta:', response.json())
+
+Verificar vulnerabilidades de CVEs
+
+python
+
+from api_toolbox import check_cve_vulnerability
+
+cve_list = ['CVE-2021-12345', 'CVE-2021-23456', 'CVE-2021-34567']
+
+for cve in cve_list:
+    is_vulnerable = check_cve_vulnerability(cve)
+    if is_vulnerable:
+        print(f'A vulnerabilidade {cve} está presente na API.')
+    else:
+        print(f'A vulnerabilidade {cve} não está presente na API.')
+
+Brute Force de Senhas
+
+python
+
+from api_toolbox import brute_force_password
+
+url = 'https://api.exemplo.com/auth'
+username_field = 'username'
+password_field = 'password'
+
+brute_force_password(url, username_field, password_field)
+
+Considerações finais
+
+Lembre-se de utilizar o Python API Toolbox 2.0 de forma ética e responsável. O uso indevido das ferramentas pode causar problemas sérios e violar leis e políticas de segurança. Sempre obtenha permissão e atue dentro dos limites legais ao realizar testes e interações com APIs.
